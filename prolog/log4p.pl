@@ -82,8 +82,8 @@ logf(Level,Message,Arguments) :-
 
 % We don't log if the level is not valid
 log(Level,_Message) :-
-  log_levels(Levels),
-  \+member(Level,Levels),
+  valid_log_levels(ValidLevels),
+  \+member(Level,ValidLevels),
   !.
 
 % We also don't log if the level is too low
