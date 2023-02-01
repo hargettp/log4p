@@ -20,6 +20,9 @@
   remove_log_handler/1,
   stderr_log_handler/2,
 
+  use_default_log_handler/0,
+  use_stderr_log_handler/0,
+
   logf/3,
   log/2
   ]).
@@ -43,6 +46,15 @@ trace(Message,Arguments) :- logf(trace,Message,Arguments).
 :- thread_local log_level/1.
 
 log_level(info).
+
+use_default_log_handler :-
+  retractall(log_handler(_)),
+  add_log_handler(default_log_handler).
+
+
+use_stderr_log_handler :-
+  retractall(log_handler(_)),
+  add_log_handler(stderr_log_handler).
 
 :- dynamic log_handler/1.
 :- thread_local log_handler/1.
