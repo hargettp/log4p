@@ -18,6 +18,7 @@
 
   add_log_handler/1,
   remove_log_handler/1,
+  stderr_log_handler/2,
 
   logf/3,
   log/2
@@ -48,17 +49,23 @@ log_level(info).
 
 log_handler(default_log_handler).
 
-add_log_handler(new_handler) :-
-  Clause = log_handler(new_handler),
-  Clause ; assertz(log_handler(new_handler)).
+add_log_handler(NewHandler) :-
+  Clause = log_handler(NewHandler),
+  Clause ; assertz(log_handler(NewHandler)).
 
-remove_log_handler(new_handler) :-
-  retractall(log_handler(new_handler)).
+remove_log_handler(OldHandler) :-
+  retractall(log_handler(OldHandler)).
 
 default_log_handler(Level,Message) :-
   writef('%w: %w\n',[Level, Message]),
   flush_output.
 
+stderr_log_handler(Level,Message) :-
+  with_output_to(user_error, (
+    default_log_handler(Level, Message)
+    )
+  ).
+  
 set_log_level(NewLevel,OldLevel) :-
   log_level(OldLevel),
   retractall(log_level(OldLevel)),
@@ -82,15 +89,27 @@ logf(Level,Message,Arguments) :-
 
 % We don't log if the level is not valid
 log(Level,_Message) :-
-  valid_log_levels(ValidLevels),
-  \+member(Level,ValidLevels),
-  !.
-
-% We also don't log if the level is too low
-log(Level,_Message) :-
   log_levels(Levels),
   \+member(Level,Levels),
   !.
 
+% We also don't log if the level is too low (e.g, below current)
+log(Level,_Message) :-
+  log_levels(Levels),
+  log_level(Current),
+  index_of(Level,Levels,LevelIndex),
+  index_of(Current,Levels,CurrentIndex),
+  LevelIndex < CurrentIndex,
+  !.
+
 log(Level,Message) :-
   forall(log_handler(Handler),apply(Handler,[Level,Message])).
+
+index_of(Element,List,Index) :-
+  index_of(0,Element,List,Index).
+
+index_of(Current,Element,[Element|_],Current) :- !.
+
+index_of(Current, Element, [_|RestOfList], Index) :- 
+  Next is Current + 1,
+  index_of(Next, Element, RestOfList,Index).
