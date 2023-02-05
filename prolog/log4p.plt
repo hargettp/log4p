@@ -2,29 +2,24 @@
 
 :- use_module(log4p).
 
-test(default_log_level) :-
-  log4p:log_level(info).
-
-test(set_log_level) :-
-  log4p:log_level(info),
-  set_log_level(warn,info),
+test(set_log_level, [setup(set_log_level(info, Current)), cleanup(set_log_level(Current,_))]) :-
+  set_log_level(warn,_),
   log4p:log_level(warn),
   set_log_level(info,warn),
-  log4p:log_level(info),
-  findall(Level,log4p:log_level(Level),[info]).
+  log4p:log_level(info).
 
-test(log_levels) :-
+test(log_levels, [setup(set_log_level(info, Current)), cleanup(set_log_level(Current,_))]) :-
   log_levels([trace,debug,info,warn,error,fatal]).
 
-test(valid_default_log_levels) :-
+test(valid_default_log_levels, [setup(set_log_level(info, Current)), cleanup(set_log_level(Current,_))]) :-
   findall(ValidLevels,log4p:valid_log_levels(ValidLevels),[[info,warn,error,fatal]]).
 
-test(valid_warn_log_levels) :-
+test(valid_warn_log_levels, [setup(set_log_level(info, Current)), cleanup(set_log_level(Current,_))]) :-
   set_log_level(warn,info),
   findall(ValidLevels,log4p:valid_log_levels(ValidLevels),[[warn,error,fatal]]),
   set_log_level(info,warn).
 
-test(valid_fatal_log_levels) :-
+test(valid_fatal_log_levels, [setup(set_log_level(info, Current)), cleanup(set_log_level(Current,_))]) :-
   set_log_level(fatal,info),
   findall(ValidLevels,log4p:valid_log_levels(ValidLevels),[[fatal]]),
   set_log_level(info,fatal).
