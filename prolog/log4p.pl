@@ -13,7 +13,16 @@
   debug/2,
   trace/2,
 
-  set_log_level/2,
+  get_log_level/1,
+
+  set_global_log_level/1,
+  set_global_log_level/2,
+  clear_global_log_level/0,
+
+  set_local_log_level/1,
+  set_local_log_level/2,
+  clear_local_log_level/0,
+
   log_levels/1,
 
   add_log_handler/1,
@@ -41,11 +50,6 @@ warn(Message,Arguments) :- logf(warn,Message,Arguments).
 info(Message,Arguments) :- logf(info,Message,Arguments).
 debug(Message,Arguments) :- logf(debug,Message,Arguments).
 trace(Message,Arguments) :- logf(trace,Message,Arguments).
-
-:- dynamic log_level/1.
-:- thread_local log_level/1.
-
-log_level(info).
 
 use_default_log_handler :-
   retractall(log_handler(_)),
@@ -77,16 +81,59 @@ stderr_log_handler(Level,Message) :-
     default_log_handler(Level, Message)
     )
   ).
-  
-set_log_level(NewLevel,OldLevel) :-
-  log_level(OldLevel),
-  retractall(log_level(OldLevel)),
-  asserta(log_level(NewLevel)).
+
+:- dynamic global_log_level/1.
+
+:- thread_local local_log_level/1.
+
+% Defines the default log level, if no other value
+% has been set
+default_log_level(info).
+
+% Return the current effective log level,
+% choosing any locally set log level first,
+% then the global log level, and finally the 
+% default (info)
+get_log_level(LogLevel) :-
+  local_log_level(LogLevel), !.
+
+get_log_level(LogLevel) :-
+  global_log_level(LogLevel), !.
+
+get_log_level(LogLevel) :-
+  default_log_level(LogLevel),!.
+
+set_global_log_level(NewLevel) :-
+  set_global_log_level(NewLevel, _).
+
+set_global_log_level(NewLevel,OldLevel) :-
+  ( global_log_level(OldLevel)
+    -> clear_global_log_level
+    ; true
+    ),
+  asserta(global_log_level(NewLevel)).
+
+clear_global_log_level :-
+  retractall(global_log_level(_)).
+
+set_local_log_level(NewLevel) :-
+  set_local_log_level(NewLevel, _).
+
+set_local_log_level(NewLevel,OldLevel) :-
+  ( local_log_level(OldLevel)
+    -> clear_local_log_level
+    ; true
+    ),
+  retractall(local_log_level(OldLevel)),
+  asserta(local_log_level(NewLevel)).
+
+clear_local_log_level :-
+  retractall(local_log_level(_)).
 
 log_levels([trace,debug,info,warn,error,fatal]).
 
 valid_log_levels(ValidLevels) :-
-  log_level(Level),
+  get_log_level(Level),
   log_levels(Levels),
   valid_log_levels(Level,Levels,ValidLevels).
 
@@ -108,7 +155,7 @@ log(Level,_Message) :-
 % We also don't log if the level is too low (e.g, below current)
 log(Level,_Message) :-
   log_levels(Levels),
-  log_level(Current),
+  get_log_level(Current),
   index_of(Level,Levels,LevelIndex),
   index_of(Current,Levels,CurrentIndex),
   LevelIndex < CurrentIndex,
