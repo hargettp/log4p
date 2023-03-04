@@ -106,6 +106,9 @@ get_log_level(LogLevel) :-
 set_global_log_level(NewLevel) :-
   set_global_log_level(NewLevel, _).
 
+set_global_log_level(NewLevel,_) :-
+  var(NewLevel), !.
+
 set_global_log_level(NewLevel,OldLevel) :-
   ( global_log_level(OldLevel)
     -> clear_global_log_level
@@ -118,6 +121,10 @@ clear_global_log_level :-
 
 set_local_log_level(NewLevel) :-
   set_local_log_level(NewLevel, _).
+
+set_local_log_level(NewLevel, _) :-
+  % we don't set a variable as the current log level
+  var(NewLevel), !.
 
 set_local_log_level(NewLevel,OldLevel) :-
   ( local_log_level(OldLevel)

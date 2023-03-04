@@ -21,14 +21,14 @@ test(set_local_log_level) :-
   log4p:get_log_level(info),
   findall(Level,log4p:local_log_level(Level),[info]).
 
-test(log_levels, [setup(set_global_log_level(info, Current)), cleanup(set_global_log_level(Current,_))]) :-
+test(log_levels, [setup(set_global_log_level(info, Current)), cleanup((clear_global_log_level, set_global_log_level(Current,_)))]) :-
   log_levels([trace,debug,info,warn,error,fatal]).
 
-test(valid_default_log_levels, [setup(set_global_log_level(info, Current)), cleanup(set_global_log_level(Current,_))]) :-
+test(valid_default_log_levels, [setup(set_global_log_level(info, Current)), cleanup((clear_global_log_level, set_global_log_level(Current,_)))]) :-
   findall(ValidLevels,log4p:valid_log_levels(ValidLevels),[[info,warn,error,fatal]]).
 
 test(valid_warn_log_levels) :-
-  retractall(log4p:local_log_level(_)),
+  clear_local_log_level,
   set_global_log_level(warn),
   findall(ValidLevels,log4p:valid_log_levels(ValidLevels),[[warn,error,fatal]]),
   set_global_log_level(info,warn).
