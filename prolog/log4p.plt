@@ -3,23 +3,23 @@
 :- use_module(log4p).
 
 test(default_log_level) :-
-  log4p:get_log_level(info).
+  log4p:get_log_level(informational).
 
 test(set_global_log_level) :-
-  log4p:get_log_level(info),
-  set_global_log_level(warn),
-  log4p:get_log_level(warn),
-  set_global_log_level(info,warn),
-  log4p:get_log_level(info),
-  findall(Level,log4p:global_log_level(Level),[info]).
+  log4p:get_log_level(informational),
+  set_global_log_level(warning),
+  log4p:get_log_level(warning),
+  set_global_log_level(informational,warning),
+  log4p:get_log_level(informational),
+  findall(Level,log4p:global_log_level(Level),[informational]).
 
 test(set_local_log_level) :-
-  log4p:get_log_level(info),
-  set_local_log_level(warn),
-  log4p:get_log_level(warn),
-  set_local_log_level(info,warn),
-  log4p:get_log_level(info),
-  findall(Level,log4p:local_log_level(Level),[info]).
+  log4p:get_log_level(informational),
+  set_local_log_level(warning),
+  log4p:get_log_level(warning),
+  set_local_log_level(informational,warning),
+  log4p:get_log_level(informational),
+  findall(Level,log4p:local_log_level(Level),[informational]).
 
 test(log_levels, [setup(set_global_log_level(informational, Current)), cleanup((clear_global_log_level, set_global_log_level(Current,_)))]) :-
   log_levels([trace,debug,informational,notice,warning,error,critical,alert,emergency]).

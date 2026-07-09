@@ -120,7 +120,7 @@ stderr_log_handler(Level,Message) :-
 
 % Defines the default log level, if no other value
 % has been set
-default_log_level(info).
+default_log_level(informational).
 
 % Return the current effective log level,
 % choosing any locally set log level first,

@@ -1,0 +1,1 @@
+:- [prolog/log4p].
