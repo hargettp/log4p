@@ -1,6 +1,6 @@
 name(log4p).
 title('Logging for Prolog').
-version('0.0.13').
+version('0.0.14').
 author('Phil Hargett','phil@haphazardhouse.net').
 maintainer('Phil Hargett', 'phil@haphazardhouse.net').
 packager('Phil Hargett', 'phil@haphazardhouse.net').
