@@ -18,18 +18,9 @@ The basic model for logging involves a few simple concepts.
  * **Handlers** - messages aren't directly written to output logfiles or destinations, but instead are provided to any each log _handler_ (maintained per-thread) which are predicates that accepts a formatted message and emit the message to the log destination specific to each log handler implementation
  * **Levels** - messages have a _level_, and this library maintains a concept of current _log level_ (per-thread) such that messages of a lower level than the current log level are not emitted to any handlers.
 
- The log levels understood by this library, in ascending order of priority, are: `trace`, `debug`, `informational`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`. These levels follow the [RFC 5424](https://tools.ietf.org/html/rfc5424) severity levels for syslog compatibility.
+ The log levels understood by this library, in ascending order of priority, are: `trace`, `debug`, `info`, `warn`, `error`, `fatal`. If the current log level is set to `info`, for example, then message of `debug` or to further left in that list will not be given to a handler.
 
- **Legacy aliases**: For backward compatibility, the following legacy aliases are still available:
-  * `info` → `informational`
-  * `warn` → `warning`
-  * `fatal` → `emergency`
-
- If the current log level is set to `informational`, for example, then message of `debug` or to further left in that list will not be given to a handler.
-
- Generating messages is usually a matter of using a number of predicates named for each level: `trace/1`, `debug/1`, `informational/1`, `notice/1`, `warning/1`, `error/1`, `critical/1`, `alert/1`, `emergency/1`, and their `/2` variants for formatted logging. The `/1` variant logs a constant string (or term rendered as a string). The `/2` variant takes a format string and an array of arguments, then calls `swritef` to generate a constant string which is then passed onto log handlers. If the currently effective log level for the calling thread is not equal to or "higher" (e.g., more to the right in the above list of log levels), then the message will be filtered out and not delivered to any handlers.
-
- The legacy aliases (`info/1,2`, `warn/1,2`, `fatal/1,2`) are also available and map to their RFC 5424 equivalents.
+ Generating messages is usually a matter of using a number of predicates named for each level: `info/1`, `info/2`, `warn/1`, `warn/2` etc. The `/1` variant logs a constant string (or term rendered as a string). The `/2` variant takes a format string and an array of arguments, then calls `swritef` to generate a constant string which is then passed onto log handlers. If the currently effective log level for the calling thread is not equal to or "higher" (e.g., more to the right in the above list of log levels), then the message will be filtered out and not delivered to any handlers.
 
 The effective log level is a layered per-thread choice, depending on which settings are specified:
 

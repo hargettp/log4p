@@ -1,32 +1,17 @@
 :- module(log4p,[
-  emergency/1,
-  alert/1,
-  critical/1,
+  fatal/1,
   error/1,
-  warning/1,
-  notice/1,
-  informational/1,
+  warn/1,
+  info/1,
   debug/1,
   trace/1,
 
-  emergency/2,
-  alert/2,
-  critical/2,
-  error/2,
-  warning/2,
-  notice/2,
-  informational/2,
-  debug/2,
-  trace/2,
-
-  % Legacy aliases for backward compatibility
-  fatal/1,
-  warn/1,
-  info/1,
-
   fatal/2,
+  error/2,
   warn/2,
   info/2,
+  debug/2,
+  trace/2,
 
   get_log_level/1,
 
@@ -38,9 +23,7 @@
   set_local_log_level/2,
   clear_local_log_level/0,
 
-   log_levels/1,
-
-   valid_log_levels/1,
+  log_levels/1,
 
   add_log_handler/1,
   remove_log_handler/1,
@@ -53,35 +36,20 @@
   log/2
   ]).
 
-% RFC 5424 severity levels (from highest to lowest priority)
-emergency(Message) :- logf(emergency,Message,[]).
-alert(Message) :- logf(alert,Message,[]).
-critical(Message) :- logf(critical,Message,[]).
+fatal(Message) :- logf(fatal,Message,[]).
 error(Message) :- logf(error,Message,[]).
-warning(Message) :- logf(warning,Message,[]).
-notice(Message) :- logf(notice,Message,[]).
-informational(Message) :- logf(informational,Message,[]).
+warn(Message) :- logf(warn,Message,[]).
+info(Message) :- logf(info,Message,[]).
 debug(Message) :- logf(debug,Message,[]).
 trace(Message) :- logf(trace,Message,[]).
 
-emergency(Message,Arguments) :- logf(emergency,Message,Arguments).
-alert(Message,Arguments) :- logf(alert,Message,Arguments).
-critical(Message,Arguments) :- logf(critical,Message,Arguments).
+
+fatal(Message,Arguments) :- logf(fatal,Message,Arguments).
 error(Message,Arguments) :- logf(error,Message,Arguments).
-warning(Message,Arguments) :- logf(warning,Message,Arguments).
-notice(Message,Arguments) :- logf(notice,Message,Arguments).
-informational(Message,Arguments) :- logf(informational,Message,Arguments).
+warn(Message,Arguments) :- logf(warn,Message,Arguments).
+info(Message,Arguments) :- logf(info,Message,Arguments).
 debug(Message,Arguments) :- logf(debug,Message,Arguments).
 trace(Message,Arguments) :- logf(trace,Message,Arguments).
-
-% Legacy aliases for backward compatibility
-fatal(Message) :- emergency(Message).
-warn(Message) :- warning(Message).
-info(Message) :- informational(Message).
-
-fatal(Message,Arguments) :- emergency(Message,Arguments).
-warn(Message,Arguments) :- warning(Message,Arguments).
-info(Message,Arguments) :- informational(Message,Arguments).
 
 use_default_log_handler :-
   retractall(log_handler(_)),
@@ -169,9 +137,7 @@ set_local_log_level(NewLevel,OldLevel) :-
 clear_local_log_level :-
   retractall(local_log_level(_)).
 
-% Log levels in ascending priority order (matches RFC 5424 severity)
-% trace < debug < informational < notice < warning < error < critical < alert < emergency
-log_levels([trace,debug,informational,notice,warning,error,critical,alert,emergency]).
+log_levels([trace,debug,info,warn,error,fatal]).
 
 valid_log_levels(ValidLevels) :-
   get_log_level(Level),
