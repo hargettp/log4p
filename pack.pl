@@ -5,5 +5,5 @@ author('Phil Hargett','phil@haphazardhouse.net').
 maintainer('Phil Hargett', 'phil@haphazardhouse.net').
 packager('Phil Hargett', 'phil@haphazardhouse.net').
 home('https://github.com/hargettp/log4p').
-download('https://github.com/hargettp/log4p.git').
+download('https://github.com/hargettp/log4p/archive/refs/tags/*.zip').
 provides(logger).
